@@ -12,6 +12,20 @@ size_t receivedDataToISStream(char* ptr, size_t size, size_t nmemb, void* userp)
   return rslt;
 }
 
+pageReader::pageReader()
+{
+  curl = curl_easy_init();
+  
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, receivedDataToISStream);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, static_cast<void*>(&data));
+  curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+}
+
+pageReader::~pageReader()
+{
+  curl_easy_cleanup(curl);
+}
+
 const std::istringstream& pageReader::getRawData() const noexcept
 {
   return data;
@@ -24,18 +38,10 @@ const std::string pageReader::getURL() const noexcept
 
 bool pageReader::fetch( const std::string _url, CURLcode* errcode )
 {
-  CURL* curl = curl_easy_init();
-  
   if( curl )
   {
-    bool canPerform = true;
     
-    canPerform &= curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, receivedDataToISStream) == CURLE_OK;
-    canPerform &= curl_easy_setopt(curl, CURLOPT_WRITEDATA, static_cast<void*>(&data)) == CURLE_OK;
-    canPerform &= curl_easy_setopt(curl, CURLOPT_URL, _url.c_str()) == CURLE_OK;
-    canPerform &= curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L) == CURLE_OK;
-    
-    if( canPerform )
+    if( curl_easy_setopt(curl, CURLOPT_URL, _url.c_str()) == CURLE_OK )
     {
       curl_easy_perform(curl);
       
@@ -44,7 +50,6 @@ bool pageReader::fetch( const std::string _url, CURLcode* errcode )
       
       url = curl_url;
       
-      curl_easy_cleanup(curl);
       return true;
     }
   }

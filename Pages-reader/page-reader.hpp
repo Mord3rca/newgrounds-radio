@@ -18,7 +18,8 @@ size_t receivedDataToISStream( char*, size_t, size_t, void* );
 class pageReader
 {
 public:
-  pageReader(){};
+  pageReader();
+  ~pageReader();
   
   const std::string getURL() const noexcept;
   
@@ -33,6 +34,8 @@ protected:
 private:
   std::string url; //because, why not ? Could be usefull in case of forwarding & stuff
   std::istringstream data;
+  
+  CURL* curl;
   
 };
 
