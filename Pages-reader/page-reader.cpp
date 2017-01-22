@@ -26,6 +26,11 @@ pageReader::~pageReader()
   curl_easy_cleanup(curl);
 }
 
+void pageReader:operator()()
+{
+  process();
+}
+
 const std::istringstream& pageReader::getRawData() const noexcept
 {
   return data;

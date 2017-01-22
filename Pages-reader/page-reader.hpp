@@ -4,6 +4,8 @@
 #include <curl/curl.h>
 #include <json/json.h>
 
+#include <ostream>
+
 #include <string>
 #include <vector>
 #include <sstream>
@@ -21,6 +23,8 @@ public:
   pageReader();
   ~pageReader();
   
+  void operator()(); //Maybe for threading this shits !
+  
   const std::string getURL() const noexcept;
   
   bool fetch( const std::string, CURLcode* = nullptr );
@@ -28,8 +32,8 @@ public:
   const std::istringstream& getRawData() const noexcept;
   
 protected:
-  //virtual void process() = 0; //Should be call by the derivated class
-  //virtual void* getRslt() = 0; //Result: void* = any structure
+  virtual void process() = 0; //Should be call by the derivated class
+  virtual void* getRslt() = 0; //Result: void* = any structure, do a cast
   
 private:
   std::string url; //because, why not ? Could be usefull in case of forwarding & stuff
