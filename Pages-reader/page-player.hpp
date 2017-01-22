@@ -32,6 +32,8 @@ struct audioPageData
     float worst = 0;
     float best = 0;
     float rate = 0;
+    
+    unsigned long count = 0;
   } rates;
   
   struct PlayerCfg
@@ -67,10 +69,15 @@ public:
   void process();
   void* getRslt() const noexcept;
   
-  typedef typename  *(struct audioPageData) rslt_type;
+  typedef audioPageData* rslt_type;
   
 private:
   audioPageData data;
+  
+  bool lookForMetaItem(const std::string&);
+  bool lookForJSONLine(const std::string&);
+  bool lookForGenre   (const std::string&);
+  bool lookForTags    (const std::string&, std::istringstream&);
 };
 
 #endif // AUDIOPAGE_HPP

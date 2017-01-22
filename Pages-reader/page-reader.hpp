@@ -29,11 +29,11 @@ public:
   
   bool fetch( const std::string, CURLcode* = nullptr );
   
-  const std::istringstream& getRawData() const noexcept;
+  std::istringstream& getRawData() noexcept;
   
 protected:
-  virtual void process() = 0; //Should be call by the derivated class
-  virtual void* getRslt() = 0; //Result: void* = any structure, do a cast
+  virtual void process(){}; //Should be call by the derivated class
+  virtual void* getRslt(){ return nullptr; }; //Result: void* = any structure, do a cast
   
 private:
   std::string url; //because, why not ? Could be usefull in case of forwarding & stuff

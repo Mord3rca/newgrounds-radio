@@ -26,12 +26,12 @@ pageReader::~pageReader()
   curl_easy_cleanup(curl);
 }
 
-void pageReader:operator()()
+void pageReader::operator()()
 {
   process();
 }
 
-const std::istringstream& pageReader::getRawData() const noexcept
+std::istringstream& pageReader::getRawData() noexcept
 {
   return data;
 }
@@ -61,4 +61,3 @@ bool pageReader::fetch( const std::string _url, CURLcode* errcode )
   
   return false;
 }
-
