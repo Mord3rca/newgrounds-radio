@@ -41,7 +41,41 @@ const char* audioPage_SubgenreList[] =
   "SUBGENRE_ERROR", nullptr
 };
 
-
+//And the fun can continue here !
+const char* audioPage_UrlGenreList[] =
+{
+  //Easy Listening
+  "classical", "jazz", "solo-instrument",
+  
+  //Electronic
+  "ambient", "chipstep", "dance", "drum-n-bass", "dupstep",
+  "house", "industrial", "new-wave", "synthwave", "techno",
+  "trance", "video-game",
+  
+  //Hip Hop, Rap, R&B
+  "hip-hop---modern", "hip-hop---olskool", "nerdcore", "rb",
+  
+  //Metal Rock
+  "brit-pop", "classic-rock", "general-rock", "grunge",
+  "heavy-metal", "indie", "pop", "punk",
+  
+  //Other
+  "cinematic", "experimental", "funk", "fusion",
+  "goth", "miscellaneous", "ska", "world",
+  
+  //Podcasts
+  "bluegrass", "blues", "country",
+  
+  //Voice Acting
+  "a-capella", "comedy", "creepypasta", "drama",
+  "informational", "spoken-world", "voice-demo",
+  
+  //One day if a song have no subgenre:
+  //"easy-listening", "electronic", "hip-hop-rap-rb", "metal-rock",
+  //"other", "podcasts", "southern-flavor", "voice-acting",
+  
+  nullptr
+};
 
 audioPage::audioPage(){}
 
@@ -205,13 +239,105 @@ bool audioPage::lookForGenre   (const std::string& line)
   
   if( pos != std::string::npos )
   {
-    data.genre    = GENRE_ERROR;
-    data.subgenre = SUBGENRE_ERROR;
+    pos += str_const_tmp.length();
+    std::string::size_type pos2 = line.find( "\"", pos);
+    
+    std::string urlsubgenre = line.substr( pos, pos2 - pos);
+    
+    urlSubgenreToEnum( urlsubgenre );
     
     return true;
   }
   
   return false;
+}
+
+void audioPage::urlSubgenreToEnum( const std::string& in )
+{
+  enum audioPage_Subgenre rslt = SUBGENRE_ERROR;
+  
+  for( unsigned int i = 0; i < SUBGENRE_ERROR; i++ )
+  {
+    if( in.find( audioPage_UrlGenreList[i] ) != std::string::npos )
+    {
+      rslt = (enum audioPage_Subgenre)i; break;
+    }
+  }
+  
+  //This switch will be long ... Just for guessing the genre
+  switch( rslt )
+  {
+    case SUBGENRE_CLASSICAL:
+    case SUBGENRE_JAZZ:
+    case SUBGENRE_SOLO_INSTRUMENT:
+      data.genre = GENRE_EASY_LISTENING;
+      break;
+    
+    case SUBGENRE_AMBIANT:
+    case SUBGENRE_CHIPSTEP:
+    case SUBGENRE_DANCE:
+    case SUBGENRE_DRUMNBASS:
+    case SUBGENRE_DUPSTEP:
+    case SUBGENRE_HOUSE:
+    case SUBGENRE_INDUSTRIAL:
+    case SUBGENRE_NEW_WAVE:
+    case SUBGENRE_SYNTHWAVE:
+    case SUBGENRE_TECHNO:
+    case SUBGENRE_TRANCE:
+    case SUBGENRE_VIDEO_GAME:
+      data.genre = GENRE_ELECTRONIC;
+      break;
+    
+    case SUBGENRE_HIPHOP_MODERN:
+    case SUBGENRE_HIPHOP_OLSKOOL:
+    case SUBGENRE_NERDCORE:
+    case SUBGENRE_RNB:
+      data.genre = GENRE_HIPHOP_RAP_RNB;
+      break;
+    
+    case SUBGENRE_BRIT_POP:
+    case SUBGENRE_CLASSICAL_ROCK:
+    case SUBGENRE_GENERAL_ROCK:
+    case SUBGENRE_GRUNGE:
+    case SUBGENRE_HEAVY_METAL:
+    case SUBGENRE_INDIE:
+    case SUBGENRE_POP:
+    case SUBGENRE_PUNK:
+      data.genre = GENRE_METAL_ROCK;
+      break;
+    
+    case SUBGENRE_CINEMATIC:
+    case SUBGENRE_EXPERIMENTAL:
+    case SUBGENRE_FUNK:
+    case SUBGENRE_FUSION:
+    case SUBGENRE_GOTH:
+    case SUBGENRE_MISCELLANEOUS:
+    case SUBGENRE_SKA:
+    case SUBGENRE_WORLD:
+      data.genre = GENRE_OTHER;
+      break;
+    
+    case SUBGENRE_DISCUSSION:
+    case SUBGENRE_BLUES:
+    case SUBGENRE_COUNTRY:
+      data.genre = GENRE_PODCASTS;
+      break;
+    
+    case SUBGENRE_ACAPELLA:
+    case SUBGENRE_COMEDY:
+    case SUBGENRE_CREEPYPASTA:
+    case SUBGENRE_DRAMA:
+    case SUBGENRE_INFORMATIONAL:
+    case SUBGENRE_SPOKEN_WORLD:
+    case SUBGENRE_VOICE_DEMO:
+      data.genre = GENRE_VOICE_ACTING;
+      break;
+    
+    default:
+      data.genre = GENRE_ERROR;
+  }
+  
+  data.subgenre = rslt;
 }
 
 //Stream Needed ... Cauz it's multiline
@@ -245,12 +371,22 @@ bool audioPage::lookForTags    (const std::string& line, std::istringstream& in)
   return false;
 }
 
+const char* audioPageData::formattedGenre()
+{
+  return audioPage_GenreList[ this->genre ];
+}
+
+const char* audioPageData::formattedSubgenre()
+{
+  return audioPage_SubgenreList[ this->subgenre ];
+}
+
 //Begin prints function of data structure
 void audioPageData::print( std::ostream& out )
 {
   out << "Filename: " << name << std::endl
-      << "Genre:    " << genre << std::endl
-      << "SubGenre: " << subgenre << std::endl
+      << "Genre:    " << formattedGenre() << std::endl
+      << "SubGenre: " << formattedSubgenre() << std::endl
       << "-- Tags --" << std::endl;
       
       if( tags.size() > 0 )

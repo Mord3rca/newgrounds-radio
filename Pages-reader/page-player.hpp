@@ -37,7 +37,7 @@ enum audioPage_Genre
   GENRE_ERROR
 };
 
- enum audioPage_Subgenre
+enum audioPage_Subgenre
 {
   //Classical
   SUBGENRE_CLASSICAL=0, SUBGENRE_JAZZ=1, SUBGENRE_SOLO_INSTRUMENT=2,
@@ -73,6 +73,9 @@ enum audioPage_Genre
 extern const char* audioPage_GenreList[];
 extern const char* audioPage_SubgenreList[];
 
+//Used to guess url shits string in lookForGenre
+extern const char* audioPage_UrlGenreList[];
+
 struct audioPageData
 {
   std::string name;
@@ -80,8 +83,8 @@ struct audioPageData
   struct Rating
   {
     float worst = 0;
-    float best = 0;
-    float rate = 0;
+    float best  = 0;
+    float rate  = 0;
     
     unsigned long count = 0;
   } rates;
@@ -98,10 +101,13 @@ struct audioPageData
     std::string iconUri;
   } player;
   
-  audioPage_Genre     genre;
-  audioPage_Subgenre  subgenre;
+  audioPage_Genre     genre     = GENRE_ERROR;
+  audioPage_Subgenre  subgenre  = SUBGENRE_ERROR;
   
   std::vector< std::string > tags;
+  
+  const char* formattedGenre();
+  const char* formattedSubgenre();
   
   void print(std::ostream&);
   void printRate(std::ostream&);
@@ -123,6 +129,8 @@ public:
   
 private:
   audioPageData data;
+  
+  void urlSubgenreToEnum( const std::string& );
   
   bool lookForMetaItem(const std::string&);
   bool lookForJSONLine(const std::string&);
