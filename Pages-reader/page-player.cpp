@@ -1,5 +1,48 @@
 #include "page-player.hpp"
 
+const char* audioPage_GenreList[] =
+{
+  "Easy Listening", "Electronic", "Hip Hop, Rap, R&B",
+  "Metal, Rock", "Other", "Podcasts", "Southern Flavor",
+  "Voice Acting", "GENRE_ERROR", nullptr
+};
+
+const char* audioPage_SubgenreList[] =
+{
+  //Easy Listening
+  "Classical", "Jazz", "Solo Instrument",
+  
+  //Electronic
+  "Ambient", "Chipstep", "Dance", "Dum N Bass",
+  "Dubstep", "House", "Industrial", "New Wave",
+  "Synthwave", "Techno", "Trance", "Video Game",
+  
+  //Hip Hop, Rap, R&B
+  "Hip Hop - Modern", "Hip Hop - Olskool", "Nerdcore", "R&B",
+  
+  //Metal, Rock
+  "Brit Pop", "Classic Rock", "General Rock", "Grunge",
+  "Heavy Metal", "Indie", "Pop", "Punk",
+  
+  //Other
+  "Cinematic", "Experimental", "Funk", "Fusion",
+  "Goth", "Miscallaneous", "Ska", "World",
+  
+  //Podcasts
+  "Discussion", "Music", "Storytelling",
+  
+  //Southern Flavor
+  "Bluegrass", "Blues", "Country",
+  
+  //Voice Acting
+  "A Capella", "Comedy", "Creepypasta", "Drama",
+  "Informational", "Spoken World", "Voice Demo",
+  
+  "SUBGENRE_ERROR", nullptr
+};
+
+
+
 audioPage::audioPage(){}
 
 audioPage::~audioPage(){}
@@ -54,7 +97,7 @@ void audioPage::process()
   }
   
   //Cleaning up to free the memory from the song commentary
-  //They will be used another time !
+  //They will be used another time ! In an API maybe ?
   this->getRawData().str("");
 }
 
@@ -162,8 +205,8 @@ bool audioPage::lookForGenre   (const std::string& line)
   
   if( pos != std::string::npos )
   {
-    data.genre    = "GENRE";
-    data.subgenre = "SUBGENRE";
+    data.genre    = GENRE_ERROR;
+    data.subgenre = SUBGENRE_ERROR;
     
     return true;
   }
@@ -171,6 +214,7 @@ bool audioPage::lookForGenre   (const std::string& line)
   return false;
 }
 
+//Stream Needed ... Cauz it's multiline
 bool audioPage::lookForTags    (const std::string& line, std::istringstream& in)
 {
   const std::string str_to_find("class=\"tags\"");
